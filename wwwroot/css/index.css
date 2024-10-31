@@ -1,0 +1,87 @@
+.filter-section { 
+    display: none; 
+    margin-bottom: 20px; 
+}
+
+.toggle-filters { 
+    background-color: #5B9BD5;
+    font-size: 1.2rem;
+    cursor: pointer; 
+    color: #ffffff; 
+    text-decoration: underline;
+    margin-top: 10px; 
+    margin-bottom: 20px;
+}
+
+.record-count { 
+    font-size: 1.2rem; 
+    margin-top: 15px; 
+    margin-bottom: 10px; 
+}
+
+th {
+    cursor: pointer; 
+} /* Aponta que o cabeçalho é clicável para ordenação */
+
+.sort-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+    visibility: hidden; /* Inicialmente oculto */
+}
+
+.sort-asc::after {
+    content: "▲"; /* Seta para cima */
+    color: yellow;
+}
+
+.sort-desc::after {
+    content: "▼"; /* Seta para baixo */
+    color: yellow;
+}
+
+.highlight {
+    background-color: #DDEBF7;
+}
+
+.header-bg {
+    background-color: #5B9BD5; /* Define a cor de fundo */
+    color: #ffffff; /* Define a cor do texto no cabeçalho */
+    font-weight: bold;
+}
+
+.stock-code {
+    font-weight: bold;
+}
+
+.btn {
+    background-color: #5B9BD5 !important;
+    color: #ffffff !important;
+}
+
+.dropdown-content li span
+{
+    color: #5B9BD5 !important;  
+}
+
+.col input
+{
+    color: #5B9BD5 !important;
+}
+
+.remove-filter
+{
+    font-size: 1.2rem; 
+    color: red;
+}
+
+.tooltip-box
+{
+    display:none; 
+    position:absolute; 
+    background-color:rgb(251, 251, 195); 
+    border:1px solid #000000; 
+    padding:5px; 
+    z-index:1000;
+}

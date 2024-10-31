@@ -1,0 +1,432 @@
+﻿@page
+@model IndexModel
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Data</title>
+
+    <link rel="stylesheet" href="~/css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<body>
+
+    <!-- Botão para mostrar/ocultar filtros -->
+    <div class="toggle-filters center-align" id="toggleFilters">Mostrar Filtros</div>
+
+    <!-- Filtros -->
+    <!-- Seção de Filtros -->
+    <div class="filter-section" id="filterSection">
+        <!-- Seção de formulários de filtros (conforme já criado) -->
+        <div id="filterForm" class="row">
+            <!-- Campo para selecionar o filtro -->
+            <div class="col s4">
+                <select class="filterField" id="fieldSelect">
+                    <option value="" disabled selected>Selecione o campo</option>
+                    <option value="Papel">Papel</option>
+                    <option value="Cotação">Cotação</option>
+                    <option value="P/L">P/L</option>
+                    <option value="P/VP">P/VP</option>
+                    <option value="PSR">PSR</option>
+                    <option value="Div.Yield">Div.Yield</option>
+                    <option value="P/Ativo">P/Ativo</option>
+                    <option value="P/Cap.Giro">P/Cap.Giro</option>
+                    <option value="P/EBIT">P/EBIT</option>
+                    <option value="P/Ativ Circ.Liq">P/Ativ Circ.Liq</option>
+                    <option value="EV/EBIT">EV/EBIT</option>
+                    <option value="EV/EBITDA">EV/EBITDA</option>
+                    <option value="Mrg Ebit">Mrg Ebit</option>
+                    <option value="Mrg. Líq.">Mrg. Líq.</option>
+                    <option value="Liq. Corr.">Liq. Corr.</option>
+                    <option value="ROIC">ROIC</option>
+                    <option value="ROE">ROE</option>
+                    <option value="Liq. 2 meses">Liq. 2 meses</option>
+                    <option value="Patrim. Líq">Patrim. Líq</option>
+                    <option value="Dív. Brut/ Patrim.">Dív. Brut/ Patrim.</option>
+                    <option value="Cresc. Rec. 5a">Cresc. Rec. 5a</option>                    
+                </select>
+                <label>Campo</label>
+            </div>
+
+            <div class="col s4">
+                <select class="filterField" id="filterTypeSelect">
+                </select>
+                <label>Tipo de Filtro</label>
+            </div>
+
+            <div class="col s4">
+                <input type="text" id="filterValue" placeholder="Valor do Filtro">
+            </div>
+            
+            <!-- Botão para adicionar filtro -->
+            <div class="col s12 center-align">
+                <button class="btn" id="addFilter">Adicionar Filtro</button>
+            </div>
+        </div>
+
+        <!-- Área onde os filtros adicionados serão listados -->
+        <div id="addedFilters" class="center-align"></div>
+
+        <!-- Botão para aplicar os filtros -->
+        <div class="center-align" style="margin-top: 20px;">
+            <button class="btn" id="applyFilters">Aplicar Filtros</button>
+        </div>
+    </div>
+
+    <!-- Texto que exibe a quantidade de registros -->
+    <div class="record-count center-align teal-text text-darken-4">
+        Filtrando <span id="recordsDisplayed"></span> de <span id="totalRecords"></span> registros
+    </div>
+
+    <!-- Tabela de Stocks -->
+    <table class="table table-striped" id="stockTable">
+        <thead class="header-bg">
+            <tr>
+                <th>Papel <span class="sort-indicator"></span></th>
+                <th class="align-right">Cotação <span class="sort-indicator"></span></th>
+                <th class="align-right">P/L <span class="sort-indicator"></span></th>
+                <th class="align-right">P/VP <span class="sort-indicator"></span></th>
+                <th class="align-right">PSR <span class="sort-indicator"></span></th>
+                <th class="align-right">Div.Yield <span class="sort-indicator"></span></th>
+                <th class="align-right">P/Ativo <span class="sort-indicator"></span></th>
+                <th class="align-right">P/Cap.Giro <span class="sort-indicator"></span></th>
+                <th class="align-right">P/EBIT <span class="sort-indicator"></span></th>
+                <th class="align-right">P/Ativ Circ.Liq <span class="sort-indicator"></span></th>
+                <th class="align-right">EV/EBIT <span class="sort-indicator"></span></th>
+                <th class="align-right">EV/EBITDA <span class="sort-indicator"></span></th>
+                <th class="align-right">Mrg Ebit <span class="sort-indicator"></span></th>
+                <th class="align-right">Mrg. Líq. <span class="sort-indicator"></span></th>
+                <th class="align-right">Liq. Corr. <span class="sort-indicator"></span></th>
+                <th class="align-right">ROIC <span class="sort-indicator"></span></th>
+                <th class="align-right">ROE <span class="sort-indicator"></span></th>
+                <th class="align-right">Liq. 2 meses <span class="sort-indicator"></span></th>
+                <th class="align-right">Patrim. Líq <span class="sort-indicator"></span></th>
+                <th class="align-right">Dív. Brut/ Patrim. <span class="sort-indicator"></span></th>
+                <th class="align-right">Cresc. Rec. 5a <span class="sort-indicator"></span></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var stock in Model.StocksList)
+            {
+                <tr>
+                    <td class="stock-code">
+                        <a href="https://statusinvest.com.br/acoes/@stock.Papel" target="_blank" data-stock-code="@stock.Papel">
+                            @stock.Papel
+                        </a>
+                    </td>
+                    <td class="align-right">R$ @stock.Cotacao.ToString("N2")</td>
+                    <td class="align-right">@stock.Pl.ToString("N2")</td>
+                    <td class="align-right">@stock.Pvp.ToString("N2")</td>
+                    <td class="align-right">@stock.Psr.ToString("N3")</td>
+                    <td class="align-right">@((stock.DivYield * 100).ToString("N2"))%</td>
+                    <td class="align-right">@stock.PAtivo.ToString("N3")</td>
+                    <td class="align-right">@stock.PCapGiro.ToString("N2")</td>
+                    <td class="align-right">@stock.PEbit.ToString("N2")</td>
+                    <td class="align-right">@stock.PAtivCircLiq.ToString("N2")</td>
+                    <td class="align-right">@stock.EvEbit.ToString("N2")</td>
+                    <td class="align-right">@stock.EvEbitda.ToString("N2")</td>
+                    <td class="align-right">@((stock.MrgEbit * 100).ToString("N2"))%</td>
+                    <td class="align-right">@((stock.MrgLiq * 100).ToString("N2"))%</td>
+                    <td class="align-right">@stock.LiqCorr.ToString("N2")</td>
+                    <td class="align-right">@((stock.Roic * 100).ToString("N2"))%</td>
+                    <td class="align-right">@((stock.Roe * 100).ToString("N2"))%</td>
+                    <td class="align-right">@stock.Liq2Meses.ToString("N0")</td>
+                    <td class="align-right">@stock.PatrimLiq.ToString("N0")</td>
+                    <td class="align-right">@stock.DivBrutPatrim.ToString("N2")</td>
+                    <td class="align-right">@((stock.CrescRec5a * 100).ToString("N2"))%</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Para exibição do nome da empresa -->
+    <div class="tooltip-box" id="tooltip"></div>    
+
+    <div class="footer left-align" style="margin-top: 20px;">
+        <p>Fonte: @Model.DataSourceLocation</p>
+    </div>
+<script>
+    // Função para atualizar o contador de registros
+    function updateRecordCount() {
+        const totalRows = $('#stockTable tbody tr').length;
+        const visibleRows = $('#stockTable tbody tr:visible').length;
+        $('#recordsDisplayed').text(visibleRows);
+        $('#totalRecords').text(totalRows);
+    }    
+
+    $(document).ready(function () {
+        // Inicializa os selects do Materialize
+        $('select').formSelect();
+
+        // Cria os filtros iniciais
+        $('#addedFilters').append(createFilterHtml("Papel", "Expressão regular", "^[A-Z]{4}3$"));
+        $('#addedFilters').append(createFilterHtml("P/L", "Está entre", "3 e 10"));
+        $('#addedFilters').append(createFilterHtml("P/VP", "Está entre", "0,5 e 2"));
+        $('#addedFilters').append(createFilterHtml("Div.Yield", "Está entre", "7 e 14"));
+        $('#addedFilters').append(createFilterHtml("ROE", "Está entre", "15 e 30"));
+        $('#addedFilters').append(createFilterHtml("Cresc. Rec. 5a", "Maior que", "10"));
+        $('#addedFilters').append(createFilterHtml("Liq. 2 meses", "Maior ou igual a", "1000000"));
+
+        // Atualiza o tipo de filtro com base no campo selecionado
+        $('#fieldSelect').change(function () {
+            const field = $(this).val();
+            const filterTypeSelect = $('#filterTypeSelect');
+
+            filterTypeSelect.empty(); // Limpa as opções existentes
+
+            if (field === "Papel") {
+                filterTypeSelect.append(`
+                    <option value="" disabled selected>Selecione o tipo de filtro</option>
+                    <option value="Igual a">Igual a</option>
+                    <option value="Começa com">Começa com</option>
+                    <option value="Termina com">Termina com</option>
+                    <option value="Contém">Contém</option>
+                    <option value="Não contém">Não contém</option>
+                    <option value="Expressão regular">Expressão regular</option>
+                `);
+            } else {
+                filterTypeSelect.append(`
+                    <option value="" disabled selected>Selecione o tipo de filtro</option>                
+                    <option value="Igual a">Igual a</option>
+                    <option value="Maior que">Maior que</option>
+                    <option value="Maior ou igual a">Maior ou igual a</option>
+                    <option value="Menor que">Menor que</option>
+                    <option value="Menor ou igual a">Menor ou igual a</option>
+                    <option value="Diferente de">Diferente de</option>
+                    <option value="Está entre">Está entre</option>
+                    <option value="Não está entre">Não está entre</option>
+                `);
+            }
+
+            // Re-inicializa o select
+            filterTypeSelect.formSelect();
+        });
+
+        // Alterna a visibilidade da seção de filtros
+        $('#toggleFilters').click(function () {
+            $('#filterSection').slideToggle();
+            $(this).text($(this).text() === "Mostrar Filtros" ? "Ocultar Filtros" : "Mostrar Filtros");
+        });
+
+        // Adiciona filtro à lista de filtros
+        $('#addFilter').click(function () {
+            const field = $('#fieldSelect').val();
+            const filterType = $('#filterTypeSelect').val();
+            const value = $('#filterValue').val();
+
+            if (field && filterType && value) {
+                // Adiciona o filtro à lista com um ícone de excluir
+                const filterHtml = createFilterHtml(field, filterType, value);
+                $('#addedFilters').append(filterHtml);
+                $('#filterValue').val(''); // Limpa o campo de valor
+                $('select').formSelect(); // Re-inicializa os selects
+            } else {
+                alert("Por favor, preencha todos os campos do filtro.");
+            }
+        });
+
+        function createFilterHtml(field, filterType, value) {
+            return `
+                <div class="filter-item">
+                    <p>${field} ${filterType} ${value} <a href="#" class="remove-filter">[x]</a></p>
+                    <spam style='display:none'>${field}|--|${filterType}|--|${value}</spam>
+                </div>`;
+        }
+
+        // Remove filtro
+        $(document).on('click', '.remove-filter', function () {
+            $(this).closest('.filter-item').remove();
+        });
+
+        // Aplica os filtros na tabela
+        $('#applyFilters').click(function () {
+            const filters = [];
+            $('#addedFilters spam').each(function () {
+                filters.push($(this).text());
+            });
+
+            // Limpa a tabela antes de aplicar os filtros
+            $('#stockTable tbody tr').show();
+
+            filters.forEach(filter => {
+                const fields = filter.split('|--|');
+
+                const filterField = fields[0];
+                const filterType = fields[1];
+                const filterValue = fields[2];
+
+                console.log('filterField: ' + filterField + ' , filterType: ' + filterType + ' , filterValue: ' + filterValue);
+
+                // Obter o índice da coluna correspondente ao campo
+                const columnIndex = $('#fieldSelect option').filter(function () {
+                    console.log('$(this).text(): ' + $(this).text() + ' , filterField: ' + filterField);
+                    return $(this).text() === filterField;
+                }).index()-1;
+
+                $('#stockTable tbody tr').each(function () {
+                    const row = $(this);
+                    const cellValue = row.find('td').eq(columnIndex).text().trim();
+                    let match = checkMatch(filterType, cellValue, filterValue);
+
+                    if(!match)
+                        row.hide();
+                });
+            });
+
+            // Atualiza o contador de registros
+            updateRecordCount();
+
+            // Aplica o estilo nas linhas visíveis
+            applyStripedStyle();
+        });
+
+        function applyStripedStyle() {
+            const visibleRows = $('#stockTable tbody tr:visible');
+            visibleRows.removeClass('highlight'); // Remove o estilo atual
+
+            // Aplica estilo somente às linhas pares visíveis do tbody
+            visibleRows.filter(':even').addClass('highlight');
+        }
+
+        function parseNumeric(value) {
+            return parseFloat(value.replace(/R|\$|%|\./g, '').replace(',', '.'));
+        }
+
+        function checkMatch(filterType, cellValue, filterValue) {
+            let match = false;
+            const parsedValue = filterType !== "Igual a" ? parseNumeric(cellValue) : cellValue;
+
+            switch (filterType) {
+                case "Igual a":
+                    match = parsedValue === filterValue;
+                    break;
+                case "Maior que":
+                    match = parsedValue > parseFloat(filterValue);
+                    break;
+                case "Maior ou igual a":
+                    match = parsedValue >= parseFloat(filterValue);
+                    break;
+                case "Menor que":
+                    match = parsedValue < parseFloat(filterValue);
+                    break;
+                case "Menor ou igual a":
+                    match = parsedValue <= parseFloat(filterValue);
+                    break;
+                case "Diferente de":
+                    match = parsedValue !== parseFloat(filterValue);
+                    break;
+                case "Está entre":
+                    const [lowerBound, upperBound] = filterValue.split(' e ').map(v => parseFloat(v.trim()));
+                    match = parsedValue >= lowerBound && parsedValue <= upperBound;
+                    break;
+                case "Não está entre":
+                    const [notLowerBound, notUpperBound] = filterValue.split(' e ').map(v => parseFloat(v.trim()));
+                    match = !(parsedValue >= notLowerBound && parsedValue <= notUpperBound);
+                    break;
+                case "Começa com":
+                    match = cellValue.startsWith(filterValue);
+                    break;
+                case "Termina com":
+                    match = cellValue.endsWith(filterValue);
+                    break;
+                case "Contém":
+                    match = cellValue.includes(filterValue);
+                    break;
+                case "Não contém":
+                    match = !cellValue.includes(filterValue);
+                    break;
+                case "Expressão regular":
+                    const regex = new RegExp(filterValue);
+                    match = regex.test(cellValue);
+                    break;
+            }
+
+            //if(match)
+                console.log(`match: ${match}, cellValue: |${cellValue}|, filterValue: |${filterValue}|`);
+
+            return match;
+        }
+
+        // Ordenar colunas ao clicar nos cabeçalhos
+        let sortDirection = {};
+
+        $('th').click(function() {
+            const index = $(this).index();
+            const rows = $('#stockTable tbody tr').get();
+
+            // Alternar a direção de ordenação
+            sortDirection[index] = !sortDirection[index];
+
+            // Remover as classes de ordenação de todos os cabeçalhos
+            $('th .sort-indicator').removeClass('sort-asc sort-desc').css('visibility', 'hidden');
+
+            // Definir a classe de ordenação para a coluna clicada
+            if (sortDirection[index]) {
+                $(this).find('.sort-indicator').addClass('sort-asc').css('visibility', 'visible');
+            } else {
+                $(this).find('.sort-indicator').addClass('sort-desc').css('visibility', 'visible');
+            }
+
+            rows.sort(function(a, b) {
+                const aValue = $(a).children('td').eq(index).text();
+                const bValue = $(b).children('td').eq(index).text();
+                const aNum = parseNumeric(aValue);
+                const bNum = parseNumeric(bValue);
+
+                if (aNum && bNum) {
+                    // Compara numericamente se ambos os valores são números
+                    return sortDirection[index] ? aNum - bNum : bNum - aNum;
+                } else {
+                    // Caso contrário, usa localeCompare para strings
+                    return sortDirection[index] 
+                        ? aValue.localeCompare(bValue) 
+                        : bValue.localeCompare(aValue);
+                }
+            });
+
+            $.each(rows, function(index, row) {
+                $('#stockTable tbody').append(row);
+            });
+
+            // Aplica o estilo nas linhas visíveis
+            applyStripedStyle();
+
+        });
+
+        // Tooltip com nome da ação
+        const tooltip = document.getElementById('tooltip');
+
+        document.querySelectorAll('.stock-code').forEach(function(element) {
+            element.addEventListener('mouseenter', async function(event) {
+                const stockCode = event.target.textContent.trim();
+                const stockCode2 = event.target.dataset.stockCode;
+
+                console.log('target: ' + event.target);
+                console.log('stockCode: |' + stockCode + '|');
+                console.log('stockCode2: |' + stockCode2 + '|');
+
+                // Faz a chamada para obter o nome da empresa
+                const response = await fetch(`/api/stocks/${stockCode}`); // Ajuste a URL conforme sua configuração
+                const nomeEmpresa = await response.text();
+
+                tooltip.innerHTML = nomeEmpresa;
+                tooltip.style.display = 'block';
+                tooltip.style.left = event.pageX + 'px';
+                tooltip.style.top = event.pageY + 'px';
+            });
+
+            element.addEventListener('mouseleave', function() {
+                tooltip.style.display = 'none';
+            });
+        });        
+
+        $('#applyFilters').click();
+    });
+</script>
+
+</body>
+</html>
