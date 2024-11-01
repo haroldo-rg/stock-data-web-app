@@ -16,6 +16,7 @@
     text-decoration: underline;
     margin-top: 10px; 
     margin-bottom: 20px;
+    width: 100%;
 }
 
 .record-count { 
