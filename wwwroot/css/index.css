@@ -1,3 +1,8 @@
+.padding-horizontal {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}
+
 .filter-section { 
     display: none; 
     margin-bottom: 20px; 
