@@ -3,5 +3,5 @@ using System.Threading.Tasks;
 
 public interface IStocksController
 {
-    Task<IActionResult> GetStockEnterpriseName(string stockCode);
+    Task<IActionResult> GetCompanyNameFromStockTicker(string stockCode);
 }

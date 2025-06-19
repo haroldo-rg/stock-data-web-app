@@ -5,19 +5,19 @@ using StockScraper;
 [ApiController]
 public class StocksController : ControllerBase, IStocksController
 {
-    private readonly IStocksScraper _stocksScraper;
+    private readonly IStockService _stockService;
 
-    public StocksController(IStocksScraper stocksScraper)
+    public StocksController(IStockService stockService)
     {
-        _stocksScraper = stocksScraper;
+        _stockService = stockService;
     }
 
-    [HttpGet("{stockCode}")]
-    public async Task<IActionResult> GetStockEnterpriseName(string stockCode)
+    [HttpGet("{stockTicker}")]
+    public async Task<IActionResult> GetCompanyNameFromStockTicker(string stockTicker)
     {
         try
         {
-            var companyName = await _stocksScraper.GetStockCompanyNameAsync(stockCode);
+            var companyName = await _stockService.GetCompanyNameFromStockTickerAsync(stockTicker);
 
             if (string.IsNullOrEmpty(companyName))
             {

@@ -27,7 +27,10 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 // Add services to the container.
 builder.Services.AddRazorPages();  // Adiciona suporte a Razor Pages
 builder.Services.AddControllers(); // Adiciona suporte a controllers
-builder.Services.AddSingleton<IStocksScraper, StocksScraper>(); // Registra a interface e implementação
+
+// Injeção de dependências
+builder.Services.AddSingleton<IStocksScraper, StocksScraper>();
+builder.Services.AddScoped<IStockService, StockService>();
 
 var app = builder.Build();
 

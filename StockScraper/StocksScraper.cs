@@ -81,12 +81,12 @@ public class StocksScraper : IStocksScraper
         return stockDataList;
     }
 
-    public async Task<string> GetStockCompanyNameAsync(string stockCode)
+    public async Task<string> GetCompanyNameFromStockTickerAsync(string stockTicker)
     {
         string companyName = String.Empty;
 
         // Verifica se o código da ação já está no cache
-        if (stockCompanyNameCache.TryGetValue(stockCode, out var companyNameCached))
+        if (stockCompanyNameCache.TryGetValue(stockTicker, out var companyNameCached))
             return companyNameCached; // Retorna o nome da empresa do cache
 
         string? url = _configuration["stock_name_url"];
@@ -95,7 +95,7 @@ public class StocksScraper : IStocksScraper
             throw new Exception("URL de dados de ações não está configurada.");
         }
 
-        url = String.Format(url, stockCode);
+        url = String.Format(url, stockTicker);
 
         client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
 
@@ -108,7 +108,7 @@ public class StocksScraper : IStocksScraper
         companyName = Regex.Match(pageContent, pattern, RegexOptions.IgnoreCase).Groups[2].Value;
 
         // Armazena o código da ação e o nome da empresa no cache
-        stockCompanyNameCache[stockCode] = companyName;
+        stockCompanyNameCache[stockTicker] = companyName;
 
         return companyName != String.Empty ? companyName : "Nome da empresa não encontrado.";
     }
