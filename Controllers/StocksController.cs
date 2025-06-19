@@ -3,7 +3,7 @@ using StockScraper;
 
 [Route("api/[controller]")]
 [ApiController]
-public class StocksController : ControllerBase
+public class StocksController : ControllerBase, IStocksController
 {
     private readonly IStocksScraper _stocksScraper;
 
