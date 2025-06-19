@@ -30,7 +30,7 @@ builder.Services.AddControllers(); // Adiciona suporte a controllers
 
 // Injeção de dependências
 builder.Services.AddSingleton<IStocksScraper, StocksScraper>();
-builder.Services.AddScoped<IStockService, StockService>();
+builder.Services.AddSingleton<IStockService, StockService>();
 
 var app = builder.Build();
 

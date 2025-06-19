@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using StockScraper;
 
 /// <summary>
@@ -12,14 +13,16 @@ public class StocksScraper : IStocksScraper
 {
     private static readonly HttpClient client = new HttpClient();
     private readonly IConfiguration _configuration;
+    private readonly ILogger<StocksScraper> _logger;
     private static readonly CultureInfo cultureInfo = new CultureInfo("pt-BR");
 
     // Estrutura de dados para cache
     private readonly Dictionary<string, string> stockCompanyNameCache = new Dictionary<string, string>();
 
-    public StocksScraper(IConfiguration configuration)
+    public StocksScraper(IConfiguration configuration, ILogger<StocksScraper> logger)
     {
         _configuration = configuration;
+        _logger = logger;
     }
 
     public async Task<List<StockData>> GetStockDataAsync()
@@ -27,6 +30,7 @@ public class StocksScraper : IStocksScraper
         string? url = _configuration["stock_data_url"];
         if (string.IsNullOrEmpty(url))
         {
+            _logger.LogError("URL de dados de ações não está configurada.");
             throw new Exception("URL de dados de ações não está configurada.");
         }
 
@@ -78,20 +82,25 @@ public class StocksScraper : IStocksScraper
             }
         }
 
+        _logger.LogInformation("Obtidos {Count} registros de ações.", stockDataList.Count);
         return stockDataList;
     }
-
+ 
     public async Task<string> GetCompanyNameFromStockTickerAsync(string stockTicker)
     {
         string companyName = String.Empty;
 
         // Verifica se o código da ação já está no cache
         if (stockCompanyNameCache.TryGetValue(stockTicker, out var companyNameCached))
+        {
+            _logger.LogInformation("Nome da empresa para {Ticker} obtido do cache.", stockTicker);
             return companyNameCached; // Retorna o nome da empresa do cache
+        }
 
         string? url = _configuration["stock_name_url"];
         if (string.IsNullOrEmpty(url))
         {
+            _logger.LogError("URL de dados de ações não está configurada.");
             throw new Exception("URL de dados de ações não está configurada.");
         }
 
@@ -110,6 +119,11 @@ public class StocksScraper : IStocksScraper
         // Armazena o código da ação e o nome da empresa no cache
         stockCompanyNameCache[stockTicker] = companyName;
 
+        if (companyName != String.Empty)
+            _logger.LogInformation("Nome da empresa para {Ticker}: {CompanyName}", stockTicker, companyName);
+        else
+            _logger.LogWarning("Nome da empresa não encontrado para {Ticker}", stockTicker);
+
         return companyName != String.Empty ? companyName : "Nome da empresa não encontrado.";
     }
 
@@ -119,6 +133,7 @@ public class StocksScraper : IStocksScraper
         {
             return result;
         }
+        _logger.LogWarning("Falha ao converter '{Value}' para decimal.", value);
         return 0; // Valor padrão caso a conversão falhe
     }
 
@@ -134,6 +149,7 @@ public class StocksScraper : IStocksScraper
             return result / 100;
         }
         
+        _logger.LogWarning("Falha ao converter '{Value}' para percentual.", value);
         return 0;
     }  
 }
