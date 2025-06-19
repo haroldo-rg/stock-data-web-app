@@ -2,12 +2,13 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
+using StockScraper;
 
 /// <summary>
 /// Classe para extrair as informações das ações do web site cuja URL está
 /// configurada em stock_prices_url" no arquivo appsettings.json
 /// </summary>
-public class StocksScraper
+public class StocksScraper : IStocksScraper
 {
     private static readonly HttpClient client = new HttpClient();
     private readonly IConfiguration _configuration;

@@ -1,5 +1,6 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using StockScraper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 // Add services to the container.
 builder.Services.AddRazorPages();  // Adiciona suporte a Razor Pages
 builder.Services.AddControllers(); // Adiciona suporte a controllers
-builder.Services.AddSingleton<StocksScraper>(); // Registra o serviço StocksScraper
+builder.Services.AddSingleton<IStocksScraper, StocksScraper>(); // Registra a interface e implementação
 
 var app = builder.Build();
 

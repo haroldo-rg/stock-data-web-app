@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using StockScraper;
 
 [Route("api/[controller]")]
 [ApiController]
 public class StocksController : ControllerBase
 {
-    private readonly StocksScraper _stocksScraper;
+    private readonly IStocksScraper _stocksScraper;
 
-    public StocksController(StocksScraper stocksScraper)
+    public StocksController(IStocksScraper stocksScraper)
     {
         _stocksScraper = stocksScraper;
     }
