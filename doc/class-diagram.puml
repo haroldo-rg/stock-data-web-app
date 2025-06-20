@@ -1,0 +1,67 @@
+@startuml
+allowmixing
+
+package "Application.Entrypoint" {
+  class Program
+}
+
+package "Application.API.Controllers" {
+    interface IStocksController
+    class StocksController
+}
+
+package "Application.API.Model" {
+    class StockData
+}
+
+package "Application.API.Services" {
+    interface IStockService
+    class StockService
+}
+
+package "Application.API.Repository" {
+    interface IStocksScraper
+    class StocksScraper
+    class StocksScraperMock
+}
+
+package "Application.Configuration" {
+    class ConfigurationLoader
+}
+
+package "Application.Frontend" {
+    class ErrorModel
+    class IndexModel
+    class StockDataViewModel
+}
+
+' Entidade externa com fundo cinza claro
+rectangle "Website externo\nhttps://www.fundamentus.com.br" as Fundamentus #EEEEEE
+
+' Relações Controllers
+StocksController ..|> IStocksController : implementa
+StocksController --> IStockService : usa
+
+' Relações Services
+StockService ..|> IStockService
+StockService --> IStocksScraper : usa
+StockService --> StockData : retorna
+
+' Relações Scraper
+StocksScraper ..|> IStocksScraper : implementa
+StocksScraperMock ..|> IStocksScraper : implementa
+
+' Relação Scraper -> Fundamentus
+StocksScraper --> Fundamentus : requisita dados
+
+' Relações Program
+Program --> ConfigurationLoader : instancia
+Program --> StocksController : injeta
+Program --> StockService : injeta
+Program --> StocksScraper : injeta
+
+' Relações Pages
+IndexModel --> StockDataViewModel : instancia
+IndexModel ..> StocksController : envia requisição para
+
+@enduml
