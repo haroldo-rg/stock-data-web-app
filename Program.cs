@@ -29,7 +29,18 @@ builder.Services.AddRazorPages();  // Adiciona suporte a Razor Pages
 builder.Services.AddControllers(); // Adiciona suporte a controllers
 
 // Injeção de dependências
-builder.Services.AddSingleton<IStocksScraper, StocksScraper>();
+
+// Verifica se deve usar dados mockados ou reais
+bool UseMocData = Convert.ToBoolean(builder.Configuration["use_mock_data"]);
+if (UseMocData)
+{
+    builder.Services.AddSingleton<IStocksScraper, StocksScraperMock>();
+}
+else
+{
+    builder.Services.AddSingleton<IStocksScraper, StocksScraper>();
+}
+
 builder.Services.AddSingleton<IStockService, StockService>();
 
 var app = builder.Build();

@@ -410,7 +410,7 @@
                 console.log('stockCode2: |' + stockCode2 + '|');
 
                 // Faz a chamada para obter o nome da empresa
-                const response = await fetch(`/api/stocks/${stockCode}`); // Ajuste a URL conforme sua configuração
+                const response = await fetch(`/api/Stocks/${stockCode}`);
                 const nomeEmpresa = await response.text();
 
                 tooltip.innerHTML = nomeEmpresa;
